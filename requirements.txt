@@ -1,0 +1,5 @@
+setuptools==74.1.2
+pysolr==3.9.0
+psycopg==3.2.1
+fastapi==0.113.0
+uvicorn==0.30.6

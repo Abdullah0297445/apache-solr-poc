@@ -1,0 +1,51 @@
+services:
+  solr:
+    image: solr:9
+    ports:
+      - "${SOLR_PORT}:${SOLR_PORT}"
+    environment:
+      ZK_HOST: "zoo:2181"
+    depends_on:
+      - zoo
+    volumes:
+      - solr_data:/var/solr
+
+  zoo:
+    image: zookeeper:3.9.2
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: "mntr,conf,ruok"
+
+  solr_client:
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "${SOLR_CLIENT_PORT}:${SOLR_CLIENT_PORT}"
+    command: /app/start.sh
+    volumes:
+      - ./solr_index.py:/app/solr_index.py
+      - ./solr_query.py:/app/solr_query.py
+      - ./start.sh:/app/start.sh
+    depends_on:
+      - solr
+      - postgres
+
+  postgres:
+    image: bitnami/postgresql:16
+    environment:
+      - POSTGRESQL_PASSWORD=${DB_PASS}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg_data:/bitnami/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  solr_data:
+  pg_data:
