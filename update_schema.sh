@@ -1,0 +1,73 @@
+#!/bin/bash
+
+curl -X POST -H 'Content-type:application/json' --data-binary '[
+{
+  "add-field":{
+     "name":"id",
+     "type":"string",
+     "stored":true,
+     "indexed"=true,,
+     "required"=true
+      }
+},
+{
+  "add-field":{
+     "name":"subject",
+     "type":"text_general",
+     "stored":true,
+     "indexed"=true,
+      }
+},
+{
+  "add-field":{
+     "name":"content",
+     "type":"text_general",
+     "stored":true,
+     "indexed"=true,
+      }
+},
+{
+  "add-field":{
+     "name":"published_at",
+     "type":"pdate",
+     "stored":true,
+     "indexed"=true,
+      }
+},
+{
+  "add-field":{
+     "name":"tags",
+     "type":"string",
+     "stored":true,
+     "indexed"=true,
+     "multiValued"=true
+      }
+},
+{
+  "add-field":{
+     "name":"tag_categories",
+     "type":"string",
+     "stored":true,
+     "indexed"=true,
+     "multiValued"=true
+      }
+},
+{
+  "add-field":{
+     "name":"tag_relations",
+     "type":"string",
+     "stored":true,
+     "indexed"=true,
+     "multiValued"=true
+      }
+},
+{
+  "add-field":{
+     "name":"tag_weights",
+     "type":"pfloat",
+     "stored":true,
+     "indexed"=true,
+     "multiValued"=true
+      }
+}
+]' "http://$SOLR_HOST:$SOLR_PORT/api/collections/$SOLR_COLLECTION_NAME/schema"
