@@ -22,11 +22,11 @@ services:
       - .env
     ports:
       - "${SOLR_CLIENT_PORT}:${SOLR_CLIENT_PORT}"
-    command: /app/start.sh
+    command: /app/scripts/start.sh
     volumes:
       - ./solr_index.py:/app/solr_index.py
       - ./solr_query.py:/app/solr_query.py
-      - ./start.sh:/app/start.sh
+      - ./scripts:/app/scripts
     depends_on:
       - solr
       - postgres
@@ -34,18 +34,15 @@ services:
   postgres:
     image: bitnami/postgresql:16
     environment:
+      - POSTGRESQL_DATABASE=${DB_NAME}
+      - POSTGRESQL_USERNAME=${DB_USER}
       - POSTGRESQL_PASSWORD=${DB_PASS}
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - pg_data:/bitnami/postgresql
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - headlines_data:/bitnami/postgresql
 
 volumes:
   solr_data:
-  pg_data:
+  headlines_data:

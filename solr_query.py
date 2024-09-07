@@ -1,52 +1,37 @@
 import os
-from fastapi import FastAPI, Query
-from typing import List, Optional
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
 import pysolr
-from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-# Solr connection
-solr = pysolr.Solr(f'http://{os.getenv('SOLR_HOST')}:{os.getenv('SOLR_PORT')}/solr/{os.getenv('SOLR_COLLECTION_NAME')}')
+SOLR_URL = f'http://{os.getenv("SOLR_HOST")}:{os.getenv("SOLR_PORT")}/solr/{os.getenv("SOLR_COLLECTION_NAME")}'
+solr = pysolr.Solr(SOLR_URL, always_commit=True)
 
 
-@app.get("/search")
-async def search(
-    q: Optional[str] = Query(default='', description="Search query"),
-    tag: Optional[List[str]] = Query(None, description="List of tags for filtering")
-):
-    # Base query
-    solr_query = f'_text_:({q})'
+class SearchResult(BaseModel):
+    id: str
+    subject: list[str]
+    content: list[str]
+    published_at: str
+    score: float
 
-    # Graph traversal for tag expansion
-    if tag:
-        tag_query = ' OR '.join(tag)
-        graph_query = f'{{!graph from=tag_relations to=id maxDepth=3}}tags:({tag_query})'
-        solr_query = f'({solr_query}) OR {graph_query}'
 
-    # Solr search query with options
-    results = solr.search(solr_query, **{
-        'fl': 'id,subject,content,published_at,tags,tag_categories',
-        'facet': 'on',
-        'facet.field': ['tags', 'tag_categories'],
-        'facet.limit': 10,
-        'facet.mincount': 1,
-        'hl': 'on',
-        'hl.fl': 'subject,content',
-        'bf': 'sum(tag_weights)'
-    })
+@app.get("/search", response_model=list[SearchResult])
+async def search(q: str = Query(..., description="Search query")):
+    query = (
+        f'subject:({q}) OR content:({q}) OR tags.tag_category:({q}) OR tags.tag_aliases:({q}) OR '
+        f'related_tags.related_tag_category:({q}) OR related_tags.related_tag_aliases:({q})'
+    )
 
-    # Process and return the results as a JSON response
-    response = {
-        'total': results.hits,
-        'results': [dict(doc) for doc in results],
-        'facets': {
-            'tags': dict(zip(results.facets['facet_fields']['tags'][::2],
-                             results.facets['facet_fields']['tags'][1::2])),
-            'categories': dict(zip(results.facets['facet_fields']['tag_categories'][::2],
-                                   results.facets['facet_fields']['tag_categories'][1::2]))
-        },
-        'highlighting': results.highlighting
-    }
+    try:
+        # Execute the Solr query
+        results = solr.search(query, **{
+            'fl': 'id,subject,content,published_at,score',
+            'rows': 20,
+            'sort': 'score desc'
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Solr query failed: {str(e)}")
 
-    return JSONResponse(content=response)
+    return results

@@ -8,12 +8,7 @@ RUN pip install -r requirements.txt
 COPY solr_index.py .
 COPY solr_query.py .
 
-COPY start.sh .
-RUN sed -i 's/\r\n$/\n/g' start.sh
-RUN chmod +x start.sh
+COPY scripts/ scripts/
+RUN find scripts -name *.sh -type f -exec sed -i 's/\r\n$/\n/g' {} \; -exec chmod +x {} \;
 
-COPY entrypoint.sh .
-RUN sed -i 's/\r\n$/\n/g' entrypoint.sh
-RUN chmod +x entrypoint.sh
-
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
