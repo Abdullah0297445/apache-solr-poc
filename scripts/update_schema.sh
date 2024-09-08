@@ -21,13 +21,6 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
       "indexed":true
     },
     {
-      "name":"tags.tag_id",
-      "type":"plong",
-      "stored":true,
-      "indexed":true,
-      "multiValued":true
-    },
-    {
       "name":"tags.tag_category",
       "type":"text_general",
       "stored":true,
@@ -42,13 +35,6 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
       "multiValued":true
     },
     {
-      "name":"related_tags.related_tag_id",
-      "type":"plong",
-      "stored":true,
-      "indexed":true,
-      "multiValued":true
-    },
-    {
       "name":"related_tags.related_tag_category",
       "type":"text_general",
       "stored":true,
@@ -58,13 +44,6 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
     {
       "name":"related_tags.related_tag_aliases",
       "type":"text_general",
-      "stored":true,
-      "indexed":true,
-      "multiValued":true
-    },
-    {
-      "name":"related_tags.relation_strength",
-      "type":"pfloat",
       "stored":true,
       "indexed":true,
       "multiValued":true
