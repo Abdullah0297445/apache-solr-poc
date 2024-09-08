@@ -24,12 +24,12 @@ Imagine the following schema:
 
 ## Abstract Solution
 1. We need to create a collection/core in Solr.
-2. We need to de-normalize the whole data and send it to Solr for indexing. You can see it in [solar_index.py](./solr_index.py) file. Of course, in a production environment, we need to use something like Solr's **Data Import Handler** which can take data from postgres directly.
-3. We don't need to create "weight" field in Solr since Solr automatically scores the queries and rank the search results accordingly. 
+2. We need to de-normalize the whole data in our database (which we want to search on) and send it to Solr for indexing. You can see it in [solar_index.py](./solr_index.py) file. Of course, in a production environment, we need to use something like Solr's **Data Import Handler** which can ingest data from postgres directly.
+3. We don't need to create "weight" fields in Solr since Solr automatically scores the queries and rank the search results accordingly. 
 4. If default scoring mechanism is not good enough for us then we can:
    1. Boost important/relevant terms. We can even leverage functions here.
    2. Implement a custom similarity algorithm based on the nature of our problem.
-5. when the data is indexed we can simply query it using the `OR` option. You can see it in [solar_query.py](./solr_query.py) file. You can create query of any complexity you like.
+5. when the data is indexed we can simply query it using the `OR` option for all the required fields. You can see it in [solar_query.py](./solr_query.py) file. You can create query of any complexity you like.
 6. We can also apply facets to tag categories to narrow down the search results.
 
 
