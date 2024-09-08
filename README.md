@@ -33,7 +33,7 @@ Imagine the following schema:
 6. We can also apply facets to tag categories to narrow down the search results.
 
 
-## How to Run this PoC?
+## How to Run the code?
 
 Must have Docker Desktop installed in your PC.
 
