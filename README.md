@@ -17,7 +17,7 @@ Imagine the following schema:
    5. Fixed Income 
    6. Oil (Crude, WTI) [Commodities]
    7. Commodities
-5. A headline with the subject “BoE cuts interest rates by 0.5%” should be searchable by its aliases such as Bank of England, along with any related tags and their aliases, both directly related, such as UK, Central Banks and United Kingdom. Likewise, indirect relations, such as Fixed Income and Europe should also need to return this headline. Obviously, a search for Oil/WTI/Crude/Commodities tags should not yield results for this headline.
+5. A headline with the subject "BoE cuts interest rates by 0.5%" should be searchable by its aliases such as Bank of England, along with any related tags and their aliases, both directly related, such as UK, Central Banks and United Kingdom. Likewise, indirect relations, such as Fixed Income and Europe should also need to return this headline. Obviously, a search for Oil/WTI/Crude/Commodities tags should not yield results for this headline.
 
 ## The end goal
 > We need to model this use-case of searching using Apache Solr and not any SQL database. How can we, at a high level, leverage Solr’s search indexing such that the above tagging mechanism can be accounted for.
@@ -29,7 +29,7 @@ Imagine the following schema:
 4. If default scoring mechanism is not good enough for us then we can:
    1. Boost important/relevant terms. We can even leverage functions here.
    2. Implement a custom similarity algorithm based on the nature of our problem.
-5. when the data is indexed we can simply query it using the `OR` option for all the required fields. You can see it in [solar_query.py](./solr_query.py) file. You can create query of any complexity you like.
+5. When the data is indexed we can simply query it using the `OR` option for all the required fields. You can see it in [solar_query.py](./solr_query.py) file. You can create query of any complexity you like.
 6. We can also apply facets to tag categories to narrow down the search results.
 
 
